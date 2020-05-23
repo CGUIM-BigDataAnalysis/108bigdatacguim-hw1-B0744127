@@ -1,0 +1,6 @@
+library(SportsAnalytics) 
+NBA1516<-fetch_NBAPlayerStatistics("15-16")
+library(data.table) #如果沒安裝過，要先安裝
+NBA1516DT<-data.table(NBA1516)
+ass <- NBA1516DT[Assists>100]
+str(ass)

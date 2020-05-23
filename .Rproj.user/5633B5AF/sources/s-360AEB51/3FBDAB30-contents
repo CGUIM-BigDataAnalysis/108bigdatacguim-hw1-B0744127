@@ -1,0 +1,135 @@
+# Q2
+
+library(SportsAnalytics)
+library(ggplot2)
+
+NBA1819<-
+  fetch_NBAPlayerStatistics("18-19")
+
+qplot(x=Steals,y=TotalRebounds,
+      data=NBA1819)
+
+
+#Q3
+ggplot(NBA1819,
+       aes(x=Steals,y=TotalRebounds))+
+  geom_point()
+
+
+
+#Q4
+library(readr)
+Comp <- 
+  read_csv("http://data.gcis.nat.gov.tw/od/file?oid=9D63D882-9B21-4FAA-9A10-2D5E0D938A47 ")
+Comp$總計家數
+Comp$`縣 市 別`
+CompBase<- 
+  read.csv("C:/Users/yjtseng/Downloads/201803 (2).csv",
+           encoding="UTF-8")
+CompBase$總計家數
+CompBase$X.U.FEFF.縣.市.別
+# Method 1
+CompClean<-Comp[c(-1,-2,-23),]
+# Method 2
+library(dplyr)
+CompClean<-Comp %>% 
+  filter(!grepl('總計|地區',`縣 市 別`))
+# Method 3
+CompClean<-Comp %>% 
+  filter(grepl('縣|市',`縣 市 別`))
+# ggplot
+ggplot(CompClean,
+       aes(x=總計家數,y=總計資本額))+
+  geom_point()
+
+
+#Q5
+CompDetail<- 
+  read_csv("C:/Users/yjtseng/Downloads/201803 (1).csv")
+CompDetail$City<-
+  substr(CompDetail$公司所在地,
+       1,3)
+table(CompDetail$City)
+# bar 1
+ggplot(CompDetail,
+       aes(x=City))+
+  geom_bar()
+# bar 2
+CompCount<-CompDetail %>% 
+  group_by(City) %>%
+  summarise(Count=n())
+### text order start
+order<-CompCount %>% 
+  arrange(desc(Count)) %>% 
+  pull(City)
+
+CompCount$City<-
+  factor(CompCount$City,
+         levels=order)
+### text order end
+ggplot(CompCount,
+       aes(x=City,y=Count))+
+  geom_bar(stat="identity")
+
+
+
+# bar 3
+ggplot(CompDetail,
+       aes(x=City))+
+  geom_bar()+coord_flip()
+# hist all
+ggplot(CompDetail,
+       aes(資本額))+
+  geom_histogram(binwidth = 10000000)
+# hist sub
+ggplot(CompDetail,
+       aes(資本額))+
+  geom_histogram(binwidth = 10000000)+
+  facet_grid(City~.)
+ggplot(CompDetail,
+       aes(資本額))+
+  geom_histogram(binwidth = 10000000)+
+  facet_grid(.~City)
+# hist clean sub
+CompSub<-CompDetail %>% 
+  filter(grepl('新北|臺北|桃園',City))
+ggplot(CompSub,
+       aes(資本額))+
+  geom_histogram(binwidth = 10000000)+
+  facet_grid(City~.,
+             scale="free",space="free")
+ggplot(CompSub,
+       aes(資本額))+
+  geom_histogram(binwidth = 10000000)+
+  facet_grid(.~City) +
+  labs(y="公司家數",title="test")+
+  theme_bw()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
